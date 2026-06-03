@@ -1,0 +1,18 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFrameworks>net48;net10.0</TargetFrameworks>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="System.Memory" Version="4.6.3" />
+  </ItemGroup>
+	
+  <ItemGroup>
+    <Reference Include="SpanEx">
+      <HintPath>..\SpanEx.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+
+</Project>

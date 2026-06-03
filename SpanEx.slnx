@@ -1,0 +1,5 @@
+<Solution>
+  <Project Path="SpanEx/SpanEx.csproj" Id="d7458097-f8ae-428e-b351-dc1c4a4ec1e3" />
+  <Project Path="SpanExGenerator/SpanExGenerator.csproj" Id="336a7b12-c0a0-43c8-87fe-33cfff26a5b7" />
+  <Project Path="TestSpanEx/TestSpanEx.csproj" />
+</Solution>
