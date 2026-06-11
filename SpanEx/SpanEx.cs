@@ -8,6 +8,15 @@ namespace Mod.LowLevel
     {
         public object Ref;
         public int Length;
+
+        public static SpanStubModern Of<T>(Span<T> span)
+        {
+            return span.ToStubModernCommon();
+        }
+        public static SpanStubModern Of<T>(ReadOnlySpan<T> span)
+        {
+            return span.ToStubModernCommon();
+        }
     }
     [StructLayout(LayoutKind.Sequential)]
     public struct SpanStubOld
@@ -15,6 +24,15 @@ namespace Mod.LowLevel
         public object Ref;
         public IntPtr Offset;
         public int Length;
+
+        public static SpanStubOld Of<T>(Span<T> span)
+        {
+            return span.ToStubOldCommon();
+        }
+        public static SpanStubOld Of<T>(ReadOnlySpan<T> span)
+        {
+            return span.ToStubOldCommon();
+        }
     }
     [StructLayout(LayoutKind.Sequential)]
     public struct SpanStubModern<T>
