@@ -12,30 +12,30 @@ namespace Mod.LowLevel.Test
                 span[i] = (byte)(10 * i);
             }
 
-            if (SpanEx.StubType == typeof(SpanEx.SpanStubModern))
+            if (SpanEx.StubType == typeof(SpanStubModern))
             {
-                ref SpanEx.SpanStubModern layout = ref SpanEx.ConvertToNormal<SpanEx.SpanStubModern, byte>(in span);
+                ref SpanStubModern layout = ref SpanEx.ConvertToNormal<SpanStubModern, byte>(in span);
                 Test(layout);
 
             }
-            else if (SpanEx.StubType == typeof(SpanEx.SpanStubOld))
+            else if (SpanEx.StubType == typeof(SpanStubOld))
             {
-                ref SpanEx.SpanStubOld layout = ref SpanEx.ConvertToNormal<SpanEx.SpanStubOld, byte>(in span);
+                ref SpanStubOld layout = ref SpanEx.ConvertToNormal<SpanStubOld, byte>(in span);
                 Test(layout);
             }
         }
 
-        static void Test(SpanEx.SpanStubOld old)
+        static void Test(SpanStubOld old)
         {
-            Span<byte> span = SpanEx.ConvertToSpan<SpanEx.SpanStubOld, byte>(in old);
+            Span<byte> span = SpanEx.ConvertToSpan<SpanStubOld, byte>(in old);
             foreach (byte b in span)
             {
                 Console.WriteLine(b);
             }
         }
-        static void Test(SpanEx.SpanStubModern old)
+        static void Test(SpanStubModern old)
         {
-            Span<byte> span = SpanEx.ConvertToSpan<SpanEx.SpanStubModern, byte>(in old);
+            Span<byte> span = SpanEx.ConvertToSpan<SpanStubModern, byte>(in old);
             foreach (byte b in span)
             {
                 Console.WriteLine(b);

@@ -4,63 +4,76 @@ using System.Runtime.InteropServices;
 namespace Mod.LowLevel
 {
     [StructLayout(LayoutKind.Sequential)]
+    public struct SpanStubModern
+    {
+        public object Ref;
+        public int Length;
+    }
+    [StructLayout(LayoutKind.Sequential)]
+    public struct SpanStubOld
+    {
+        public object Ref;
+        public IntPtr Offset;
+        public int Length;
+    }
+    [StructLayout(LayoutKind.Sequential)]
     public struct SpanStubModern<T>
     {
-        public SpanEx.SpanStubModern Inner;
+        public SpanStubModern Inner;
 
-        public static implicit operator SpanEx.SpanStubModern(SpanStubModern<T> stub)
+        public static implicit operator SpanStubModern(SpanStubModern<T> stub)
         {
             return stub;
         }
-        public static implicit operator SpanStubModern<T>(SpanEx.SpanStubModern stub)
+        public static implicit operator SpanStubModern<T>(SpanStubModern stub)
         {
             return new SpanStubModern<T>() { Inner = stub };
         }
         public static implicit operator SpanStubModern<T>(Span<T> span)
         {
-            return SpanEx.ConvertToStubModern(in span);
+            return SpanEx.ToStubModern(in span);
         }
         public static implicit operator SpanStubModern<T>(ReadOnlySpan<T> span)
         {
-            return SpanEx.ConvertToStubModern(in span);
+            return SpanEx.ToStubModern(in span);
         }
         public static implicit operator Span<T>(SpanStubModern<T> stub)
         {
-            return SpanEx.ConvertToSpan(in stub);
+            return SpanEx.ToSpan(in stub);
         }
         public static implicit operator ReadOnlySpan<T>(SpanStubModern<T> stub)
         {
-            return SpanEx.ConvertToReadOnlySpan(in stub);
+            return SpanEx.ToReadOnlySpan(in stub);
         }
     }
     [StructLayout(LayoutKind.Sequential)]
     public struct SpanStubOld<T>
     {
-        public SpanEx.SpanStubOld Inner;
+        public SpanStubOld Inner;
 
-        public static implicit operator SpanEx.SpanStubOld(SpanStubOld<T> stub)
+        public static implicit operator SpanStubOld(SpanStubOld<T> stub)
         {
             return stub;
         }
-        public static implicit operator SpanStubOld<T>(SpanEx.SpanStubOld stub)
+        public static implicit operator SpanStubOld<T>(SpanStubOld stub)
         {
             return new SpanStubOld<T>() { Inner = stub };
         }
         public static implicit operator SpanStubOld<T>(Span<T> span)
         {
-            return SpanEx.ConvertToStubOld(in span);
+            return SpanEx.ToStubOld(in span);
         }
         public static implicit operator SpanStubOld<T>(ReadOnlySpan<T> span)
         {
-            return SpanEx.ConvertToStubOld(in span);
+            return SpanEx.ToStubOld(in span);
         }
         public static implicit operator Span<T>(SpanStubOld<T> stub)
         {
-            return SpanEx.ConvertToSpan(in stub);
+            return SpanEx.ToSpan(in stub);
         }
         public static implicit operator ReadOnlySpan<T>(SpanStubOld<T> stub)
         {
-            return SpanEx.ConvertToReadOnlySpan(in stub);
+            return SpanEx.ToReadOnlySpan(in stub);
         }
     }
 
@@ -149,51 +162,69 @@ namespace Mod.LowLevel
             return ref ConvertToReadOnlySpanImp<TNormal, TElement>(in rnormal);
         }
 
-        [StructLayout(LayoutKind.Sequential)]
-        public struct SpanStubModern
-        {
-            public object Ref;
-            public int Length;
-        }
-        [StructLayout(LayoutKind.Sequential)]
-        public struct SpanStubOld
-        {
-            public object Ref;
-            public IntPtr Offset;
-            public int Length;
-        }
-
-        public static ref SpanStubModern<T> ConvertToStubModern<T>(this in Span<T> span)
+        public static ref SpanStubModern<T> ToStubModern<T>(this in Span<T> span)
         {
             return ref SpanEx.ConvertToNormal<SpanStubModern<T>, T>(in span);
         }
-        public static ref SpanStubModern<T> ConvertToStubModern<T>(this in ReadOnlySpan<T> span)
+        public static ref SpanStubModern<T> ToStubModern<T>(this in ReadOnlySpan<T> span)
         {
             return ref SpanEx.ConvertToNormal<SpanStubModern<T>, T>(in span);
         }
-        public static ref Span<T> ConvertToSpan<T>(this in SpanStubModern<T> stub)
+        public static ref SpanStubModern ToStubModernCommon<T>(this in Span<T> span)
+        {
+            return ref SpanEx.ConvertToNormal<SpanStubModern, T>(in span);
+        }
+        public static ref SpanStubModern ToStubModernCommon<T>(this in ReadOnlySpan<T> span)
+        {
+            return ref SpanEx.ConvertToNormal<SpanStubModern, T>(in span);
+        }
+        public static ref Span<T> ToSpan<T>(this in SpanStubModern<T> stub)
         {
             return ref SpanEx.ConvertToSpan<SpanStubModern<T>, T>(in stub);
         }
-        public static ref ReadOnlySpan<T> ConvertToReadOnlySpan<T>(this in SpanStubModern<T> stub)
+        public static ref ReadOnlySpan<T> ToReadOnlySpan<T>(this in SpanStubModern<T> stub)
         {
             return ref SpanEx.ConvertToReadOnlySpan<SpanStubModern<T>, T>(in stub);
         }
-        public static ref SpanStubOld<T> ConvertToStubOld<T>(this in Span<T> span)
+        public static ref Span<T> ToSpan<T>(this in SpanStubModern stub)
+        {
+            return ref SpanEx.ConvertToSpan<SpanStubModern, T>(in stub);
+        }
+        public static ref ReadOnlySpan<T> ToReadOnlySpan<T>(this in SpanStubModern stub)
+        {
+            return ref SpanEx.ConvertToReadOnlySpan<SpanStubModern, T>(in stub);
+        }
+        public static ref SpanStubOld<T> ToStubOld<T>(this in Span<T> span)
         {
             return ref SpanEx.ConvertToNormal<SpanStubOld<T>, T>(in span);
         }
-        public static ref SpanStubOld<T> ConvertToStubOld<T>(this in ReadOnlySpan<T> span)
+        public static ref SpanStubOld<T> ToStubOld<T>(this in ReadOnlySpan<T> span)
         {
             return ref SpanEx.ConvertToNormal<SpanStubOld<T>, T>(in span);
         }
-        public static ref Span<T> ConvertToSpan<T>(this in SpanStubOld<T> stub)
+        public static ref SpanStubOld ToStubOldCommon<T>(this in Span<T> span)
+        {
+            return ref SpanEx.ConvertToNormal<SpanStubOld, T>(in span);
+        }
+        public static ref SpanStubOld ToStubOldCommon<T>(this in ReadOnlySpan<T> span)
+        {
+            return ref SpanEx.ConvertToNormal<SpanStubOld, T>(in span);
+        }
+        public static ref Span<T> ToSpan<T>(this in SpanStubOld<T> stub)
         {
             return ref SpanEx.ConvertToSpan<SpanStubOld<T>, T>(in stub);
         }
-        public static ref ReadOnlySpan<T> ConvertToReadOnlySpan<T>(this in SpanStubOld<T> stub)
+        public static ref ReadOnlySpan<T> ToReadOnlySpan<T>(this in SpanStubOld<T> stub)
         {
             return ref SpanEx.ConvertToReadOnlySpan<SpanStubOld<T>, T>(in stub);
+        }
+        public static ref Span<T> ToSpan<T>(this in SpanStubOld stub)
+        {
+            return ref SpanEx.ConvertToSpan<SpanStubOld, T>(in stub);
+        }
+        public static ref ReadOnlySpan<T> ToReadOnlySpan<T>(this in SpanStubOld stub)
+        {
+            return ref SpanEx.ConvertToReadOnlySpan<SpanStubOld, T>(in stub);
         }
     }
 }
