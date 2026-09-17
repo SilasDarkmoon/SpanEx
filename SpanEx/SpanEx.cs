@@ -6,7 +6,7 @@ namespace Mod.LowLevel
     [StructLayout(LayoutKind.Sequential)]
     public struct SpanStubModern
     {
-        public object Ref;
+        public IntPtr Ref;
         public int Length;
 
         public static SpanStubModern Of<T>(Span<T> span)
@@ -21,7 +21,7 @@ namespace Mod.LowLevel
     [StructLayout(LayoutKind.Sequential)]
     public struct SpanStubOld
     {
-        public object Ref;
+        public IntPtr Ref;
         public IntPtr Offset;
         public int Length;
 
@@ -243,6 +243,108 @@ namespace Mod.LowLevel
         public static ref ReadOnlySpan<T> ToReadOnlySpan<T>(this in SpanStubOld stub)
         {
             return ref SpanEx.ConvertToReadOnlySpan<SpanStubOld, T>(in stub);
+        }
+
+        public static void ChangeLength<T>(this in ReadOnlySpan<T> span, int len)
+        {
+            unsafe
+            {
+                if (sizeof(ReadOnlySpan<T>) == sizeof(SpanStubModern))
+                {
+                    ref SpanStubModern stub = ref ConvertToNormalImp<SpanStubModern, T>(in span);
+                    stub.Length = len;
+                }
+                else if (sizeof(ReadOnlySpan<T>) == sizeof(SpanStubOld))
+                {
+                    ref SpanStubOld stub = ref ConvertToNormalImp<SpanStubOld, T>(in span);
+                    stub.Length = len;
+                }
+                else
+                {
+                    throw new PlatformNotSupportedException("Donot recognize ReadOnlySpan<T> layout!");
+                }
+            }
+        }
+        public static void ChangeLength<T>(this in Span<T> span, int len)
+        {
+            unsafe
+            {
+                if (sizeof(Span<T>) == sizeof(SpanStubModern))
+                {
+                    ref SpanStubModern stub = ref ConvertToNormalImp<SpanStubModern, T>(in span);
+                    stub.Length = len;
+                }
+                else if (sizeof(Span<T>) == sizeof(SpanStubOld))
+                {
+                    ref SpanStubOld stub = ref ConvertToNormalImp<SpanStubOld, T>(in span);
+                    stub.Length = len;
+                }
+                else
+                {
+                    throw new PlatformNotSupportedException("Donot recognize Span<T> layout!");
+                }
+            }
+        }
+
+        public static Span<T> Unprotect<T>(this ReadOnlySpan<T> span)
+        {
+            ref byte addr = ref ConvertToNormalImp<byte, T>(in span);
+            return ConvertToSpanImp<byte, T>(in addr);
+        }
+        public static Span<T> Unprotect<F, T>(ReadOnlySpan<F> span)
+        {
+            ref byte addr = ref ConvertToNormalImp<byte, F>(in span);
+            Span<T> result = ConvertToSpanImp<byte, T>(in addr);
+            int newlen;
+            unsafe
+            {
+                newlen = span.Length * sizeof(F) / sizeof(T);
+            }
+            ChangeLength(in result, newlen);
+            return result;
+        }
+
+        public static ReadOnlySpan<T> ChangeSpanType<F, T>(ReadOnlySpan<F> span)
+        {
+            ref byte addr = ref ConvertToNormalImp<byte, F>(in span);
+            ReadOnlySpan<T> result = ConvertToReadOnlySpanImp<byte, T>(in addr);
+            int newlen;
+            unsafe
+            {
+                newlen = span.Length * sizeof(F) / sizeof(T);
+            }
+            ChangeLength(in result, newlen);
+            return result;
+        }
+        public static Span<T> ChangeSpanType<F, T>(Span<F> span)
+        {
+            ref byte addr = ref ConvertToNormalImp<byte, F>(in span);
+            Span<T> result = ConvertToSpanImp<byte, T>(in addr);
+            int newlen;
+            unsafe
+            {
+                newlen = span.Length * sizeof(F) / sizeof(T);
+            }
+            ChangeLength(in result, newlen);
+            return result;
+        }
+        public static ref byte SpanRefToAddress<T>(this in Span<T> span)
+        {
+            ref byte addr = ref ConvertToNormalImp<byte, T>(in span);
+            return ref addr;
+        }
+        public static ref byte SpanRefToAddress<T>(this in ReadOnlySpan<T> span)
+        {
+            ref byte addr = ref ConvertToNormalImp<byte, T>(in span);
+            return ref addr;
+        }
+        public static ref Span<T> AddressToSpanRef<T>(this in byte addr)
+        {
+            return ref ConvertToSpanImp<byte, T>(in addr);
+        }
+        public static ref ReadOnlySpan<T> AddressToReadOnlySpanRef<T>(this in byte addr)
+        {
+            return ref ConvertToReadOnlySpanImp<byte, T>(in addr);
         }
     }
 }
